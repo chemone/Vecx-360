@@ -7,7 +7,6 @@ extern "C"{
 }
 #include "vecx.h"
 #include "osint.h"
-
 #include <SDL/SDL_image.h>
 #include <input/input.h>
 #include <libfat/fat.h>
@@ -15,7 +14,7 @@ extern "C"{
 #include <zlx/Draw.h>
 #include <zlx/Hw.h>
 #include <dirent.h>
-
+#define STICK_THRESHOLD 12000
 #define EMU_TIMER 30 /* the emulators heart beats at 20 milliseconds */
 //XenosSurface muestra elementos en pantalla
 XenosSurface * pantallaXenon;
@@ -31,10 +30,7 @@ static long scl_factor;
 static long offx;
 static long offy;
 
-// SDL audio stuff
-SDL_AudioSpec reqSpec;
-SDL_AudioSpec givenSpec;
-SDL_AudioSpec *usedSpec;
+
 
 void osint_render(void){
 	SDL_FillRect(screen, NULL, 0);
@@ -59,7 +55,7 @@ void osint_render(void){
     }
 	SDL_Flip(screen);
 }
-
+/*esta funcion comprueba si el cirectorio correspondiente de roms esta vacio*/
 BOOL directorioVacio(){
     BOOL vacio;
     DIR *d=opendir("uda:/Vecx-360_roms/");
@@ -77,6 +73,7 @@ BOOL directorioVacio(){
     }
     return vacio;
 }
+/*comprueba que el directorio correspondiente*/
 BOOL comprobarRoms(){
     BOOL existe;
     DIR * roms =opendir("uda:/Vecx-360_roms/");
@@ -172,6 +169,19 @@ static void init(){
 	exit(EXIT_FAILURE);
     }
     fclose(f);
+    char buffer[256];
+        char* period;
+        // Prepare name for overlay image: same as cartridge name but with ".png" extension
+        strcpy(buffer, cartfilename);
+        period = strrchr(buffer, '.');
+        strcpy(period, ".png");
+
+        // Seek for overlay image, load if found
+        overlay = NULL;
+	if(f = fopen(buffer, "rb")){
+    	    fclose(f);
+            overlay = IMG_Load(buffer);
+        }
 }
 
 void resize(int width, int height){
@@ -192,17 +202,16 @@ void resize(int width, int height){
 
 
 static void readevents(){
-    // En esta funcion leemos los movimientos del mando de la xbox 360
-    // Las funciones de teclado se han eliminado y se han asignado
-    // a los botones Y,X,A y B del mando así como a la cruceta
-    
+//    // En esta funcion leemos los movimientos del mando de la xbox 360
+//    // Las funciones de teclado se han eliminado y se han asignado
+//    // a los botones Y,X,A y B del mando así como a la cruceta
+//    
     static struct controller_data_s oldc;
   
     int pulsacion = 0;
-    
     while(pulsacion == 0)
     {    
-      static struct controller_data_s c;
+        static struct controller_data_s c;
       if(get_controller_data(&c,0))
       { 
         
@@ -286,13 +295,39 @@ static void readevents(){
         if ((!c.right) && (oldc.right))
         {
           alg_jch0 = 0x80;
-        }    
-        
+        } 
+        if(c.back)
+            exit(0);
+        //Analogicos
+        if(!c.back&&!c.down&&!c.left&&!c.right){
+        //Izquierda
+        if(c.s1_x<-STICK_THRESHOLD){
+            alg_jch0 = 0x00;
+        }
+        //derecha
+        if(c.s1_x>STICK_THRESHOLD){
+            alg_jch0 = 0xff;
+        }
+        //Arriba
+        if(c.s1_y>STICK_THRESHOLD){
+            alg_jch1 = 0xff;
+        }
+        //Abajo
+        if(c.s1_y<-STICK_THRESHOLD){
+            alg_jch1 = 0x00;
+        }
+        //centro
+        if((c.s1_x<STICK_THRESHOLD && c.s1_x>-STICK_THRESHOLD)
+                &&(c.s1_y<STICK_THRESHOLD && c.s1_y>-STICK_THRESHOLD)){
+            alg_jch0 = 0x80;
+            alg_jch1=0x80;
+        }
+        }
         oldc=c;
       }
       pulsacion=1;
       usb_do_poll();
-    } 
+    }
 }
 
 void osint_emuloop(){
@@ -315,7 +350,7 @@ void osint_emuloop(){
 void ActionLaunchFile(char * filename){
     cartfilename=filename;
     if (comprobarRom()){
-        SDL_Init(SDL_INIT_VIDEO);
+        SDL_Init(SDL_INIT_VIDEO&&SDL_INIT_JOYSTICK);
         resize(240, 320);
         SDL_ShowCursor(0);
         iniciarRom();
@@ -335,7 +370,7 @@ void iniciarMenu(){
     Menu.Run("/");
 }
 void iniciarRomDefecto(){
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO&&SDL_INIT_JOYSTICK);
     SDL_ShowCursor(0);
     resize(240, 320);
     init();
@@ -361,5 +396,4 @@ int main(){
         iniciarMenu();
     }
     return 0;
-
 }

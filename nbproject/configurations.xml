@@ -404,6 +404,8 @@
     </df>
     <df name="vecx-360" root=".">
       <df name="build">
+        <in>e6809.d</in>
+        <in>osint.d</in>
       </df>
       <df name="source">
         <in>SDL_gfxPrimitives.c</in>
