@@ -1,6 +1,50 @@
-Vecx-360 (By chemone and Mac1512).
+Vecx-360 0.1 beta (By chemone and Mac1512).
 
 This is a port of Vecx-SDL, originally made by jhawthorn.
+
+Features:
+
+-Overlay support (240x320px and .png extension)
+
+TODO:
+
+-Add sound support
+
+-Add support for more overlay extensions
+
+-Add support for any overlay size
+
+Know bugs:
+
+-Sometimes the image is cut, reset the emu to fix
+
+Instructions:
+
+-Copy all the archives in a pendrive in fat32
+
+-Place your roms at "Vecx-360_roms"
+
+IMPORTANT: If Vecx-360_roms is empty, then bios (rom.dat archive) Minestorm will be executed.
+
+Controls:
+
+-Movement: Analog or cross
+
+-"A" button is fire on minestorm
+
+-back button: xell
+
+Overlay Instructions:
+
+-The overlays must be 240x320 pixels
+
+-Place the overlay at the same folder and with the same name of your rom;
+for example:
+
+Vecx360_roms/Scramble.vecx
+Vecx360_roms/Scramble.png
+
+-Execute your rom normally.
 
 Thanks to:
 
@@ -10,4 +54,4 @@ Gligli and Tiros: for the RGH hack.
 
 Lantus: for the SDL libraries.
 
-Ced2911: for the graphical libraries. 
+Ced2911: for the ZLX libraries. 

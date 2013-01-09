@@ -143,7 +143,7 @@ void iniciarRom(){
 		fread(cart, 1, sizeof (cart), f);
 		fclose(f);
 	}
-        char buffer[256];
+    char buffer[256];
         char* period;
         // Prepare name for overlay image: same as cartridge name but with ".png" extension
         strcpy(buffer, cartfilename);
@@ -152,8 +152,9 @@ void iniciarRom(){
 
         // Seek for overlay image, load if found
         overlay = NULL;
-	if(f = fopen(buffer, "rb")){
-    	    fclose(f);
+		if(f = fopen(buffer, "rb")){
+    		fclose(f);
+
             overlay = IMG_Load(buffer);
         }
 }
@@ -172,14 +173,15 @@ static void init(){
     char buffer[256];
         char* period;
         // Prepare name for overlay image: same as cartridge name but with ".png" extension
-        strcpy(buffer, cartfilename);
+        strcpy(buffer, romfilename);
         period = strrchr(buffer, '.');
         strcpy(period, ".png");
 
         // Seek for overlay image, load if found
         overlay = NULL;
-	if(f = fopen(buffer, "rb")){
-    	    fclose(f);
+		if(f = fopen(buffer, "rb")){
+    		fclose(f);
+
             overlay = IMG_Load(buffer);
         }
 }
@@ -299,7 +301,7 @@ static void readevents(){
         if(c.back)
             exit(0);
         //Analogicos
-        if(!c.back&&!c.down&&!c.left&&!c.right){
+        if(!c.up&&!c.down&&!c.left&&!c.right){
         //Izquierda
         if(c.s1_x<-STICK_THRESHOLD){
             alg_jch0 = 0x00;
@@ -371,8 +373,8 @@ void iniciarMenu(){
 }
 void iniciarRomDefecto(){
     SDL_Init(SDL_INIT_VIDEO&&SDL_INIT_JOYSTICK);
+    resize(240,230);
     SDL_ShowCursor(0);
-    resize(240, 320);
     init();
     osint_emuloop();
     SDL_Quit();
