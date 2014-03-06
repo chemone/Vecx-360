@@ -55,7 +55,7 @@ void osint_render(void){
     }
 	SDL_Flip(screen);
 }
-/*esta funcion comprueba si el cirectorio correspondiente de roms esta vacio*/
+/*esta funcion comprueba si el directorio correspondiente de roms esta vacio*/
 BOOL directorioVacio(){
     BOOL vacio;
     DIR *d=opendir("uda:/Vecx-360_roms/");
@@ -73,7 +73,7 @@ BOOL directorioVacio(){
     }
     return vacio;
 }
-/*comprueba que el directorio correspondiente*/
+/*comprueba que el directorio correspondiente exista y si no esta vacio*/
 BOOL comprobarRoms(){
     BOOL existe;
     DIR * roms =opendir("uda:/Vecx-360_roms/");
