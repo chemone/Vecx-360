@@ -76,7 +76,7 @@ BOOL directorioVacio(){
 /*comprueba que el directorio correspondiente exista y si no esta vacio*/
 BOOL comprobarRoms(){
     BOOL existe;
-    DIR * roms =opendir("uda:/Vecx-360_roms/");
+    DIR * roms =opendir("uda:/Vecx-360_rom/");
     if(roms==NULL||directorioVacio()==true){
         closedir(roms);
         existe=false;
